@@ -1,0 +1,24 @@
+org: matheusribeiroengel
+service: foodiary-api
+
+provider:
+  name: aws
+  region: sa-east-1
+  runtime: nodejs24.x
+  architecture: arm64
+  memorySize: 128
+
+package:
+  individually: true
+
+build:
+  esbuild:
+    configFile: ./esbuild.config.mjs
+
+functions:
+  hello:
+    handler: src/main/functions/hello.handler
+    events:
+      - httpApi:
+          path: /
+          method: GET
