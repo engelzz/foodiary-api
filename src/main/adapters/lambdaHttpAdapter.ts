@@ -5,6 +5,7 @@ import { APIGatewayProxyEventV2, APIGatewayProxyResultV2 } from 'aws-lambda';
 import { ZodError } from 'zod';
 import { lambdaBodyParser } from '../utils/lambdaBodyParser';
 import { lambdaErrorResponse } from './lambdaErrorResponse';
+import { ApplicationError } from '@application/errors/application/ApplicationError';
 
 export function lambdaHttpAdapter(controller: Controller<unknown>) {
   return async (
@@ -39,6 +40,14 @@ export function lambdaHttpAdapter(controller: Controller<unknown>) {
 
       if (error instanceof HttpError) {
         return lambdaErrorResponse(error);
+      }
+
+      if (error instanceof ApplicationError) {
+        return lambdaErrorResponse({
+          code: error.code,
+          message: error.message,
+          statusCode: 400,
+        });
       }
 
       // eslint-disable-next-line no-console
